@@ -13,8 +13,6 @@ namespace Rayonix::Win32Tools::Entry {
     }
 
     void Main::Execute() {
-
-
         m_returnCode = 0;
     }
 
