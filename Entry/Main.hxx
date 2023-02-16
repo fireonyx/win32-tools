@@ -1,8 +1,6 @@
 #pragma once
 #include <Rayonix/Win32Tools/ControlFlow>
 
-using namespace Rayonix::Win32Tools::ControlFlow::DataTransport;
-
 namespace Rayonix::Win32Tools::Entry {
     /**
      * Win32Tools main class, entry program will begin here.
@@ -16,20 +14,38 @@ namespace Rayonix::Win32Tools::Entry {
         int m_returnCode;
 
         /**
-         * The control bus. This bus is used to send and receive control signals to nodes and other units.
+         * The size of the address bus.
          */
+        const size_t m_addressWidth;
+
+        /**
+         * The size of the data bus.
+         */
+        const size_t m_dataWidth;
 
     public:
         /**
          * The address data bus. This bus is used to send request addresses to memory.
          */
-        const Bus m_addressBus;
+        const Rayonix::Win32Tools::ControlFlow::DataTransport::Bus m_addressBus;
 
         /**
          * The data bus. This bus is used to send and receive data between nodes
          * connected to the bus.
          */
-        const Bus m_dataBus;
+        const Rayonix::Win32Tools::ControlFlow::DataTransport::Bus m_dataBus;
+
+        /**
+         * The commanding bus, this tells components on the bus what to do.
+         */
+        const Rayonix::Win32Tools::ControlFlow::DataTransport::Bus m_commandBus;
+
+        /**
+         * @param addressWidth The size of the address bus.
+         * @param dataWidth The size of the data bus.
+         * @throws std::invalid_argument If the address width is less than 1, or not a multiple of 8.
+         */
+        Main(size_t addressWidth, size_t dataWidth);
 
         /**
          * Execute the program main function and duty.

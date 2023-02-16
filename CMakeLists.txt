@@ -17,3 +17,7 @@ target_link_libraries(win32tools_bin Rayonix_Win32Tools_ControlFlow)
 # Add include directories
 target_include_directories(Rayonix_Win32Tools_ControlFlow PUBLIC "Include")
 target_include_directories(win32tools_bin PUBLIC "Include")
+
+# Set C++ version
+set_target_properties(Rayonix_Win32Tools_ControlFlow PROPERTIES CXX_STANDARD 20)
+set_target_properties(win32tools_bin PROPERTIES CXX_STANDARD 20)

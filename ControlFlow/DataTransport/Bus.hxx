@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace Rayonix::Win32Tools::ControlFlow::DataTransport {
     /**
@@ -7,7 +8,17 @@ namespace Rayonix::Win32Tools::ControlFlow::DataTransport {
      * to all contested nodes.
      */
     class Bus {
+    private:
+        /**
+         * The number of bits that the bus can transmit at once.
+         */
+        const size_t bitCount;
+
     public:
-        Bus();
+        /**
+         * @param bitCount The number of bits that the bus can transmit at once.
+         * @throws std::invalid_argument If the bit count is less than 1, or not a multiple of 8.
+         */
+        Bus(size_t bitCount);
     };
 }
