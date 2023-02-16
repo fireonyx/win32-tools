@@ -1,11 +1,10 @@
 #include "Main.hxx"
 #include <Rayonix/Win32Tools/ControlFlow>
-#include "config.h"
 
 using namespace Rayonix::Win32Tools::ControlFlow::DataTransport;
 
 namespace Rayonix::Win32Tools::Entry {
-    Main::Main(size_t addressWidth = DEFAULT_ADDRESS_WIDTH, size_t dataWidth = DEFAULT_DATA_WIDTH) :
+    Main::Main(size_t addressWidth, size_t dataWidth) :
         m_addressWidth(addressWidth),
         m_dataWidth(dataWidth),
         m_addressBus(addressWidth),

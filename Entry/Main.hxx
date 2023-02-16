@@ -1,5 +1,6 @@
 #pragma once
 #include <Rayonix/Win32Tools/ControlFlow>
+#include "config.h"
 
 namespace Rayonix::Win32Tools::Entry {
     /**
@@ -45,7 +46,7 @@ namespace Rayonix::Win32Tools::Entry {
          * @param dataWidth The size of the data bus.
          * @throws std::invalid_argument If the address width is less than 1, or not a multiple of 8.
          */
-        Main(size_t addressWidth, size_t dataWidth);
+        Main(size_t addressWidth = DEFAULT_ADDRESS_WIDTH, size_t dataWidth = DEFAULT_DATA_WIDTH);
 
         /**
          * Execute the program main function and duty.
