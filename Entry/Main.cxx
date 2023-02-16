@@ -1,7 +1,7 @@
 #include "Main.hxx"
 #include <Rayonix/Win32Tools/ControlFlow>
 
-using Rayonix::Win32Tools::ControlFlow::DataTransport::Bus;
+using namespace Rayonix::Win32Tools::ControlFlow::DataTransport;
 
 namespace Rayonix::Win32Tools::Entry {
     void Main::Execute() {

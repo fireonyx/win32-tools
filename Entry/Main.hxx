@@ -1,6 +1,8 @@
 #pragma once
 #include <Rayonix/Win32Tools/ControlFlow>
 
+using namespace Rayonix::Win32Tools::ControlFlow::DataTransport;
+
 namespace Rayonix::Win32Tools::Entry {
     /**
      * Win32Tools main class, entry program will begin here.
@@ -21,13 +23,13 @@ namespace Rayonix::Win32Tools::Entry {
         /**
          * The address data bus. This bus is used to send request addresses to memory.
          */
-        const Rayonix::Win32Tools::ControlFlow::DataTransport::Bus m_addressBus;
+        const Bus m_addressBus;
 
         /**
          * The data bus. This bus is used to send and receive data between nodes
          * connected to the bus.
          */
-        const Rayonix::Win32Tools::ControlFlow::DataTransport::Bus m_dataBus;
+        const Bus m_dataBus;
 
         /**
          * Execute the program main function and duty.
