@@ -1,1 +1,0 @@
-<img src="__Document__/BlockDiagram.svg"/>
