@@ -14,10 +14,6 @@ function handleCommandExec() {
 }
 </script>
 
-<div class="dropdownService {hideDropDown ? 'hideDrop' : ''}">
-    Hell Ser T_VI=54
-</div>
-
 <div class="title-bar">
     <section class="meta">
         <div class="icon">
@@ -66,6 +62,10 @@ function handleCommandExec() {
     </section>
 </div>
 
+<div class="dropdownService {hideDropDown ? 'hideDrop' : ''}">
+    Hell Ser T_VI=54
+</div>
+
 <style lang="scss">
 @import "../Config";
 
@@ -103,6 +103,9 @@ function handleCommandExec() {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
 
     section.meta {
         display: flex;

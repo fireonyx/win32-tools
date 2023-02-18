@@ -4,11 +4,11 @@
     import SideBar from "./components/SideBar.svelte";
 </script>
 
-<TitleBar />
 <div class="content">
 	<SideBar />
 	<Emulator />
 </div>
+<TitleBar />
 
 <style lang="scss">
 @import "Config.scss";
@@ -17,5 +17,6 @@
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+  	margin-top: 50px;
 }
 </style>
