@@ -1,6 +1,22 @@
 <script lang="ts">
 import Icon from '@iconify/svelte';
+
+let hideDropDown = true;
+
+function handleCommandExec() {
+    if (hideDropDown) {
+        hideDropDown = false;
+    } else {
+        hideDropDown = true;
+    }
+
+    console.log(hideDropDown)
+}
 </script>
+
+<div class="dropdownService {hideDropDown ? 'hideDrop' : ''}">
+    Hell Ser T_VI=54
+</div>
 
 <div class="title-bar">
     <section class="meta">
@@ -15,11 +31,17 @@ import Icon from '@iconify/svelte';
     </section>
 
     <section class="command">
-        <input type="text" placeholder="Enter command or memory block address" />
-        <button>
+        <input type="text" placeholder="Enter command or memory block address" on:blur={() => {
+            hideDropDown = true;
+        }} />
+        <button on:click={handleCommandExec}>
             <span>
                 <Icon icon="fluent:play-16-regular" />
             </span>
+
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
         </button>
     </section>
 
@@ -46,6 +68,31 @@ import Icon from '@iconify/svelte';
 
 <style lang="scss">
 @import "../Config";
+
+.dropdownService {
+    position: fixed;
+    top: 41px;
+    color: $f1;
+    left: calc(50vw - 12px);
+    background: $l1;
+    width: 500px;
+    transform: translate(-50%, 0);
+    padding: 10px;
+    display: flex;
+    overflow: auto;
+    font-family: "Cascadia Mono";
+    font-size: 11px;
+    border-radius: 0 0 4px 4px;
+    border-top: 2px solid $accent;
+    transition: $ti1;
+}
+
+.hideDrop {
+    opacity: 0;
+    pointer-events: none;
+    transition: $to1;
+    transform: translate(-50%, 10px);
+}
 
 .title-bar {
     background: $l2;
@@ -75,6 +122,7 @@ import Icon from '@iconify/svelte';
 
             svg {
                 width: 25px;
+                color: $accent;
             }
         }
 
@@ -167,27 +215,60 @@ import Icon from '@iconify/svelte';
             background: transparent;
             border: none;
             -webkit-app-region: no-drag;
-            width: 50px;
-            height: 100%;
+            width: 35px;
+            height: 35px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: $accent;
             font-size: 16px;
             position: relative;
+            overflow: hidden;
+            margin-left: 20px;
+            border-radius: 4px;
+
+            .bar1, .bar2, .bar3 {
+                width: 30%;
+                height: 200%;
+                background: $critical;
+                position: absolute;
+                animation: 3s spin 0s linear infinite;
+            }
+
+            .bar2 {
+                animation: 2s spin 0s linear infinite;
+                background: $accent;
+            }
+
+            .bar3 {
+                animation: 1s spin 0s linear infinite;
+                background: $notice;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
 
             & > span {
                 padding-right: 2px;
+                z-index: 100;
             }
 
             &:before {
                 content: "";
                 display: flex;
                 position: absolute;
-                width: 35px;
-                height: 35px;
+                width: 31px;
+                height: 31px;
+                border-radius: 2px;
+                background: $l2;
                 transition: $ti1;
-                border-radius: 4px;
+                z-index: 50;
             }
 
             span {
@@ -196,9 +277,10 @@ import Icon from '@iconify/svelte';
             }
 
             &:hover {
-                &:before {
-                    background: $l1;
-                    transition: $to1;
+                cursor: pointer;
+
+                .bar1, .bar2, .bar3 {
+                    opacity: 0.5;
                 }
             }
         }

@@ -1,9 +1,43 @@
+<script lang="ts">
+	import {Route, Router} from "svelte-navigator";
+	import Settings from "../routes/Settings.svelte";
+	import Home from "../routes/Home.svelte";
+</script>
+
 <section class="emulator">
-Hello
+	<img class="hero" src="$assets/hero.png" alt="hero" />
+
+	<div class="content">
+		<Router>
+			<Route path="/settings">
+				<Settings />
+			</Route>
+
+			<Route path="/">
+				<Home />
+			</Route>
+		</Router>
+	</div>
 </section>
 
 <style lang="scss">
 @import "../Config.scss";
+
+.hero {
+  position: absolute;
+  top: 0;
+  height: calc(100vh - 50px);
+  right: 0;
+}
+
+.content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: calc(100vh - 50px);
+  width: calc(100vw - 60px);
+  overflow: auto;
+}
 
 .emulator {
   width: calc(100vw - 60px);
@@ -14,5 +48,6 @@ Hello
   font-size: 13px;
   padding: 10px;
   user-select: none;
+  position: relative;
 }
 </style>
