@@ -33,6 +33,11 @@ function(FireStone_Add_Internal_Library FolderName)
         file(APPEND "Include/FireStone/${FolderName}" "\n#include \"${FireStone_${FolderName}_Include_Relative_Path}\"")
     endforeach()
 
+    # Set the C++ version explicitly to C++23.
+    set_property(TARGET FireStone_${FolderName} PROPERTY CXX_STANDARD 23)
+    set_property(TARGET FireStone_${FolderName} PROPERTY CXX_STANDARD_REQUIRED ON)
+    set_property(TARGET FireStone_${FolderName} PROPERTY CXX_EXTENSIONS OFF)
+
     message(STATUS "FireStone_${FolderName} added")
 endfunction()
 
