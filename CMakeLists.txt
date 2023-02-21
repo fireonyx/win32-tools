@@ -7,11 +7,18 @@ enable_testing()
 file(GLOB_RECURSE FireStone_Application_Sources "Application/*.cxx" "Application/*.hxx")
 add_executable(FireStone ${FireStone_Application_Sources})
 
+set_target_properties(FireStone PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(FireStone PROPERTIES CXX_STANDARD 23)
+
 function(FireStone_Add_Internal_Library FolderName)
     file(GLOB_RECURSE FireStone_${FolderName}_Sources "${FolderName}/*.cxx" "${FolderName}/*.hxx")
     add_library(FireStone_${FolderName} ${FireStone_${FolderName}_Sources})
     target_link_libraries(FireStone FireStone_${FolderName})
     target_include_directories(FireStone_${FolderName} PUBLIC "Include")
+
+    # Set the C++ version explicitly to C++23.
+    set_target_properties(FireStone_${FolderName} PROPERTIES LINKER_LANGUAGE CXX)
+    set_target_properties(FireStone_${FolderName} PROPERTIES CXX_STANDARD 23)
 
     # Add tests, [Test/<FolderName>/<TestName>/] inside will be CXX and HXX files. There will be a Test.cxx file in each test directory.
     file(GLOB_RECURSE FireStone_${FolderName}_Test_Sources "Test/${FolderName}/*/*.cxx" "Test/${FolderName}/*/*.hxx")
@@ -29,14 +36,9 @@ function(FireStone_Add_Internal_Library FolderName)
     file(WRITE "Include/FireStone/${FolderName}" "#pragma once\n")
     foreach(FireStone_${FolderName}_Include_Source ${FireStone_${FolderName}_Include_Sources})
         # Relative path from the include file to the actual HXX file.
-        file(RELATIVE_PATH FireStone_${FolderName}_Include_Relative_Path "${CMAKE_CURRENT_SOURCE_DIR}/Include/FireStone/${FolderName}" "${FireStone_${FolderName}_Include_Source}")
+        file(RELATIVE_PATH FireStone_${FolderName}_Include_Relative_Path "${CMAKE_CURRENT_SOURCE_DIR}/Include/FireStone" "${FireStone_${FolderName}_Include_Source}")
         file(APPEND "Include/FireStone/${FolderName}" "\n#include \"${FireStone_${FolderName}_Include_Relative_Path}\"")
     endforeach()
-
-    # Set the C++ version explicitly to C++23.
-    set_property(TARGET FireStone_${FolderName} PROPERTY CXX_STANDARD 23)
-    set_property(TARGET FireStone_${FolderName} PROPERTY CXX_STANDARD_REQUIRED ON)
-    set_property(TARGET FireStone_${FolderName} PROPERTY CXX_EXTENSIONS OFF)
 
     message(STATUS "FireStone_${FolderName} added")
 endfunction()
