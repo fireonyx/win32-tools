@@ -9,23 +9,27 @@ int main() {
     using namespace FireStone::DataTraffic;
 
     PacketTranslator<4> translator;
-    uint16_t realNumber = 0;
-    bool packets[16][4] = {};
-    bool *lastPacket;
+    
+    bool packet1[4] = { 0, 0, 0, 0 };
+    bool packet2[4] = { 0, 0, 0, 1 };
 
-    const bool truePacket[4] = { true, true, true, true };
+    bool *sum = translator.Subtract(packet1, packet2);
+    for (int i = 0; i < 4; i++)
+        std::cout << sum[i];
+    std::cout << std::endl;
 
-    for (size_t i = 0; i < 16; i++) {
-        if (i == 0) lastPacket = translator.Decrement(const_cast<bool *>(truePacket));
-        else lastPacket = translator.Decrement(lastPacket);
-        for (size_t j = 0; j < 4; j++)
-            packets[i][j] = lastPacket[j];
-    }
+    // If zero
+    if (translator.GetOutputFlags() & static_cast<uint8_t>(OutputFlags::Zero))
+        std::cout << "Zero" << std::endl;
+    // If negative
+    if (translator.GetOutputFlags() & static_cast<uint8_t>(OutputFlags::Negative))
+        std::cout << "Negative" << std::endl;
+    // If overflow
+    if (translator.GetOutputFlags() & static_cast<uint8_t>(OutputFlags::Overflow))
+        std::cout << "Overflow" << std::endl;
+    // If carry
+    if (translator.GetOutputFlags() & static_cast<uint8_t>(OutputFlags::Carry))
+        std::cout << "Carry" << std::endl;
 
-    // print out all values
-    for (size_t i = 0; i < 16; i++) {
-        for (size_t j = 0; j < 4; j++)
-            std::cout << packets[i][j];
-        std::cout << std::endl;
-    }
+    return 0;
 }

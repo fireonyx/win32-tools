@@ -4,12 +4,43 @@
 
 namespace FireStone::DataTraffic {
     /**
+     * @brief Output flags.
+    */
+    enum class OutputFlags {
+        /**
+         * @brief Negative number.
+         */
+        Negative = 1 << 0,
+
+        /**
+         * @brief Zero.
+         */
+        Zero = 1 << 1,
+
+        /**
+         * Overflow.
+         */
+        Overflow = 1 << 2,
+
+        /**
+         * @brief Carry.
+         */
+        Carry = 1 << 3
+    };
+    
+    /**
      * @brief Class used for manipulating binary packets without converting them to the host integer. This
      * packet translator will accept and manipulate little endian packets.
      * @tparam PacketWidth The width of the packet output.
      */
     template <size_t PacketWidth>
     class PacketTranslator {
+    private:
+        /**
+         * @brief The output flags.
+         */
+        uint8_t m_outputFlags = 0;
+        
     public:
         /**
          * @brief The width of the packet.
@@ -41,6 +72,24 @@ namespace FireStone::DataTraffic {
                     cary = 1;
                 }
             }
+
+            m_outputFlags = 0;
+
+            if (cary == 1)
+                m_outputFlags |= (uint8_t) OutputFlags::Carry;
+            if (cary == 2)
+                m_outputFlags |= (uint8_t) OutputFlags::Overflow;
+
+            bool zero = true;
+            for (int i = 0; i < PacketWidth; i++) {
+                if (packet1[i] == true) {
+                    zero = false;
+                    break;
+                }
+            }
+
+            if (zero)
+                m_outputFlags |= (uint8_t) OutputFlags::Zero;
 
             return packet1;
         }
@@ -84,6 +133,21 @@ namespace FireStone::DataTraffic {
                 }
             }
 
+            m_outputFlags = 0;
+
+            bool isZero = true;
+            for (int i = 0; i < PacketWidth; i++) {
+                if (packet1[i] == true) {
+                    isZero = false;
+                    break;
+                }
+            }
+
+            if (isZero)
+                m_outputFlags |= (uint8_t) OutputFlags::Zero;
+
+            // TODO: Negative checker via comparator
+
             return packet1;
         }
 
@@ -99,6 +163,14 @@ namespace FireStone::DataTraffic {
             one[PacketWidth - 1] = true;
 
             return Subtract(packet, one);
+        }
+
+        /**
+         * @brief Get the output flags.
+         * @return The output flags.
+         */
+        uint8_t GetOutputFlags() const {
+            return m_outputFlags;
         }
     };
 }
