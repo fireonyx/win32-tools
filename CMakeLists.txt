@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.2)
 project(FireStone)
 
-set(CMAKE_Application_STANDARD 23)
+set(CMAKE_Application_STANDARD 20)
 enable_testing()
 
 file(GLOB_RECURSE FireStone_Application_Sources "Application/*.cxx" "Application/*.hxx")
 add_executable(FireStone ${FireStone_Application_Sources})
 
 set_target_properties(FireStone PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(FireStone PROPERTIES CXX_STANDARD 23)
+set_target_properties(FireStone PROPERTIES CXX_STANDARD 20)
 
 function(FireStone_Add_Internal_Library FolderName)
     file(GLOB_RECURSE FireStone_${FolderName}_Sources "${FolderName}/*.cxx" "${FolderName}/*.hxx")
@@ -16,9 +16,9 @@ function(FireStone_Add_Internal_Library FolderName)
     target_link_libraries(FireStone FireStone_${FolderName})
     target_include_directories(FireStone_${FolderName} PUBLIC "Include")
 
-    # Set the C++ version explicitly to C++23.
+    # Set the C++ version explicitly to C++20.
     set_target_properties(FireStone_${FolderName} PROPERTIES LINKER_LANGUAGE CXX)
-    set_target_properties(FireStone_${FolderName} PROPERTIES CXX_STANDARD 23)
+    set_target_properties(FireStone_${FolderName} PROPERTIES CXX_STANDARD 20)
 
     # Add tests, [Test/<FolderName>/<TestName>/] inside will be CXX and HXX files. There will be a Test.cxx file in each test directory.
     file(GLOB_RECURSE FireStone_${FolderName}_Test_Sources "Test/${FolderName}/*/*.cxx" "Test/${FolderName}/*/*.hxx")
