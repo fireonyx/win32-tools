@@ -1,3 +1,5 @@
 #pragma once
 
 #include "../../DataTraffic/Bus.hxx"
+#include "../../DataTraffic/Binary.hxx"
+#include "../../DataTraffic/Bus.hxx"
