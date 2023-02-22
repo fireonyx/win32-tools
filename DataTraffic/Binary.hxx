@@ -4,30 +4,25 @@
 
 namespace FireStone::DataTraffic {
     /**
-     * @brief Output flags.
-    */
-    enum class OutputFlags {
+     * @brief The result of a binary comparison.
+     */
+    enum class ComparisonResult {
         /**
-         * @brief Negative number.
+         * @brief The first packet is less than the second packet.
          */
-        Negative = 1 << 0,
+        LessThan,
 
         /**
-         * @brief Zero.
+         * @brief The first packet is greater than the second packet.
          */
-        Zero = 1 << 1,
+        GreaterThan,
 
         /**
-         * Overflow.
+         * @brief The first packet is equal to the second packet.
          */
-        Overflow = 1 << 2,
-
-        /**
-         * @brief Carry.
-         */
-        Carry = 1 << 3
+        EqualTo
     };
-    
+
     /**
      * @brief Class used for manipulating binary packets without converting them to the host integer. This
      * packet translator will accept and manipulate little endian packets.
@@ -37,9 +32,24 @@ namespace FireStone::DataTraffic {
     class PacketTranslator {
     private:
         /**
-         * @brief The output flags.
+         * @brief Whether the zero flag is set.
          */
-        uint8_t m_outputFlags = 0;
+        bool m_zeroFlag = false;
+
+        /**
+         * @brief Whether the carry flag is set.
+         */
+        bool m_carryFlag = false;
+
+        /**
+         * @brief Whether the overflow flag is set.
+         */
+        bool m_overflowFlag = false;
+
+        /**
+         * @brief Whether the negative flag is set.
+         */
+        bool m_negativeFlag = false;
         
     public:
         /**
@@ -48,12 +58,30 @@ namespace FireStone::DataTraffic {
         static constexpr size_t Width = PacketWidth;
 
         /**
+         * @brief Compare 2 binary packets.
+         * @param packet1 The first packet.
+         * @param packet2 The second packet.
+         * @return The result of the comparison.
+         */
+        ComparisonResult Compare(const bool packet1[PacketWidth], const bool packet2[PacketWidth]) {
+            for (int i = 0; i < PacketWidth; i++) {
+                if (packet1[i] == true && packet2[i] == false)
+                    return ComparisonResult::GreaterThan;
+                if (packet1[i] == false && packet2[i] == true)
+                    return ComparisonResult::LessThan;
+            }
+
+            return ComparisonResult::EqualTo;
+        }
+
+        /**
          * @brief Add 2 binary packets together.
          * @param packet1 The first packet.
          * @param packet2 The second packet.
          * @return The sum of the 2 packets.
          */
-        bool *Add(bool packet1[PacketWidth], bool packet2[PacketWidth]) {
+        bool *Add(bool packet1[PacketWidth], const bool packet2[PacketWidth]) {
+            ResetFlags();
             uint8_t cary = 0; // 0 (00) 1 (01) 2 (11)
 
             for (int i = PacketWidth - 1; i >= 0; i--) {
@@ -73,12 +101,10 @@ namespace FireStone::DataTraffic {
                 }
             }
 
-            m_outputFlags = 0;
-
             if (cary == 1)
-                m_outputFlags |= (uint8_t) OutputFlags::Carry;
+                m_carryFlag = true;
             if (cary == 2)
-                m_outputFlags |= (uint8_t) OutputFlags::Overflow;
+                m_overflowFlag = true;
 
             bool zero = true;
             for (int i = 0; i < PacketWidth; i++) {
@@ -89,7 +115,7 @@ namespace FireStone::DataTraffic {
             }
 
             if (zero)
-                m_outputFlags |= (uint8_t) OutputFlags::Zero;
+                m_zeroFlag = true;
 
             return packet1;
         }
@@ -105,7 +131,7 @@ namespace FireStone::DataTraffic {
                 one[i] = false;
             one[PacketWidth - 1] = true;
 
-            return Add(packet, one);
+            return Add(one, packet);
         }
 
         /**
@@ -115,42 +141,50 @@ namespace FireStone::DataTraffic {
          * @return The difference of the 2 packets.
          */
         bool *Subtract(bool packet1[PacketWidth], bool packet2[PacketWidth]) {
+            ResetFlags();
+
+            auto packet1Copy = packet1;
+            auto packet2Copy = packet2;
+
+            auto compResult = Compare(packet1Copy, packet2Copy);
+
+            if (compResult == ComparisonResult::LessThan) {
+                auto temp = packet1Copy;
+                packet1Copy = packet2Copy;
+                packet2Copy = temp;
+
+                m_negativeFlag = true;
+            } else if (compResult == ComparisonResult::EqualTo) {
+                for (int i = 0; i < PacketWidth; i++)
+                    packet1[i] = false;
+
+                m_zeroFlag = true;
+                return packet1;
+            }
+
             for (int i = PacketWidth - 1; i >= 0; i--) {
-                if (packet1[i] == true && packet2[i] == false) {
-                    packet1[i] = true;
-                } else if (packet1[i] == false && packet2[i] == true) {
-                    packet1[i] = true;
+                if (packet1Copy[i] == true && packet2Copy[i] == false) {
+                    packet1Copy[i] = true;
+                } else if (packet1Copy[i] == false && packet2Copy[i] == true) {
+                    packet1Copy[i] = true;
                     for (int j = i - 1; j >= 0; j--) {
-                        if (packet1[j] == true) {
-                            packet1[j] = false;
+                        if (packet1Copy[j] == true) {
+                            packet1Copy[j] = false;
                             break;
                         } else {
-                            packet1[j] = true;
+                            packet1Copy[j] = true;
                         }
                     }
                 } else {
-                    packet1[i] = false;
+                    packet1Copy[i] = false;
                 }
             }
 
-            m_outputFlags = 0;
-
-            bool isZero = true;
-            for (int i = 0; i < PacketWidth; i++) {
-                if (packet1[i] == true) {
-                    isZero = false;
-                    break;
-                }
-            }
-
-            if (isZero)
-                m_outputFlags |= (uint8_t) OutputFlags::Zero;
-
-            // TODO: Negative checker via comparator
-
-            return packet1;
+            return packet1Copy;
         }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "ArgumentSelectionDefects"
         /**
          * @brief Decrement the value of the packet by 1.
          * @param packet The packet to decrement.
@@ -164,13 +198,48 @@ namespace FireStone::DataTraffic {
 
             return Subtract(packet, one);
         }
+#pragma clang diagnostic pop
 
         /**
-         * @brief Get the output flags.
-         * @return The output flags.
+         * @brief Get whether the zero flag is set.
+         * @return Whether the zero flag is set.
          */
-        uint8_t GetOutputFlags() const {
-            return m_outputFlags;
+        bool GetZeroFlag() const {
+            return m_zeroFlag;
+        }
+
+        /**
+         * @brief Get whether the carry flag is set.
+         * @return Whether the carry flag is set.
+         */
+        bool GetCarryFlag() const {
+            return m_carryFlag;
+        }
+
+        /**
+         * @brief Get whether the overflow flag is set.
+         * @return Whether the overflow flag is set.
+         */
+        bool GetOverflowFlag() const {
+            return m_overflowFlag;
+        }
+
+        /**
+         * @brief Get whether the negative flag is set.
+         * @return Whether the negative flag is set.
+         */
+        bool GetNegativeFlag() const {
+            return m_negativeFlag;
+        }
+
+        /**
+         * @brief Reset the flags.
+         */
+        void ResetFlags() {
+            m_zeroFlag = false;
+            m_carryFlag = false;
+            m_overflowFlag = false;
+            m_negativeFlag = false;
         }
     };
 }
