@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <functional>
 
 namespace FireStone::DataTraffic {
     /**
@@ -207,11 +208,60 @@ namespace FireStone::DataTraffic {
 #pragma clang diagnostic pop
 
         /**
+         * @brief Multiply 2 binary packets together.
+         * @param packet1 The first packet.
+         * @param packet2 The second packet.
+         * @return The product of the 2 packets.
+         */
+        bool *Multiply(bool packet1[PacketWidth], const bool packet2[PacketWidth]) {
+            ResetFlags();
+
+            bool *result = GetZeroPacket();
+            bool *timesMultiplied = GetZeroPacket();
+
+            // Load result with packet1
+            for (int i = 0; i < PacketWidth; i++)
+                result[i] = packet1[i];
+
+            auto CheckIfMultipliedFully = [&] () {
+                for (int i = 0; i < PacketWidth; i++) {
+                    if (packet2[i] != timesMultiplied[i])
+                        return true;
+                }
+                return false;
+            };
+
+            while (!CheckIfMultipliedFully()) {
+                for (int i = 0; i < PacketWidth; i++)
+                    std::cout << timesMultiplied[i];
+                std::cout << " vs ";
+                for (int i = 0; i < PacketWidth; i++)
+                    std::cout << packet2[i];
+                std::cout << std::endl;
+                result = Add(result, packet1);
+                timesMultiplied = Increment(timesMultiplied);
+            }
+
+            return result;
+        }
+
+        /**
          * @brief Get whether the zero flag is set.
          * @return Whether the zero flag is set.
          */
         bool GetZeroFlag() const {
             return m_zeroFlag;
+        }
+
+        /**
+         * @brief Get a newly generated packet with a zero value.
+         * @return A newly generated packet with a zero value.
+         */
+        bool *GetZeroPacket() const {
+            bool packet[PacketWidth];
+            for (int i = 0; i < PacketWidth; i++)
+                packet[i] = false;
+            return packet;
         }
 
         /**

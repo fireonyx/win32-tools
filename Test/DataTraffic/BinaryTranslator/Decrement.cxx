@@ -11,7 +11,7 @@ int main() {
 
     PacketTranslator<4> translator;
     bool packets[16][4] = {};
-    bool *lastPacket = nullptr;
+    bool *lastPacket;
 
     const bool falsePacket[4] = { false, false, false, false };
 
