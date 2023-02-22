@@ -131,16 +131,18 @@ namespace FireStone::DataTraffic {
                 one[i] = false;
             one[PacketWidth - 1] = true;
 
-            return Add(one, packet);
+            return Add(packet, one);
         }
 
         /**
          * @brief Subtract 2 binary packets together.
          * @param packet1 The first packet.
          * @param packet2 The second packet, which will be subtracted from the first packet.
+         * @param seamless Whether the subtraction should look seamless when approaching negative numbers. If this
+         * is disabled, the subtraction will loop around to the highest binary number after subtraction from 0.
          * @return The difference of the 2 packets.
          */
-        bool *Subtract(bool packet1[PacketWidth], bool packet2[PacketWidth]) {
+        bool *Subtract(bool packet1[PacketWidth], bool packet2[PacketWidth], bool seamless = true) {
             ResetFlags();
 
             auto packet1Copy = packet1;
@@ -148,7 +150,7 @@ namespace FireStone::DataTraffic {
 
             auto compResult = Compare(packet1Copy, packet2Copy);
 
-            if (compResult == ComparisonResult::LessThan) {
+            if (compResult == ComparisonResult::LessThan && seamless) {
                 auto temp = packet1Copy;
                 packet1Copy = packet2Copy;
                 packet2Copy = temp;
@@ -188,15 +190,16 @@ namespace FireStone::DataTraffic {
         /**
          * @brief Decrement the value of the packet by 1.
          * @param packet The packet to decrement.
+         * @param seamless Whether the subtraction should look seamless when approaching negative numbers. If this
          * @return The decremented packet.
          */
-        bool *Decrement(bool packet[PacketWidth]) {
+        bool *Decrement(bool packet[PacketWidth], bool seamless = true) {
             bool one[PacketWidth];
             for (int i = 0; i < PacketWidth - 1; i++)
                 one[i] = false;
             one[PacketWidth - 1] = true;
 
-            return Subtract(packet, one);
+            return Subtract(packet, one, seamless);
         }
 #pragma clang diagnostic pop
 
