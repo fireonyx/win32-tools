@@ -120,6 +120,8 @@ namespace FireStone::DataTraffic {
             return packet1;
         }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "ArgumentSelectionDefects"
         /**
          * @brief Increment the value of the packet by 1.
          * @param packet The packet to increment.
@@ -133,6 +135,7 @@ namespace FireStone::DataTraffic {
 
             return Add(packet, one);
         }
+#pragma clang diagnostic pop
 
         /**
          * @brief Subtract 2 binary packets together.
@@ -142,7 +145,7 @@ namespace FireStone::DataTraffic {
          * is disabled, the subtraction will loop around to the highest binary number after subtraction from 0.
          * @return The difference of the 2 packets.
          */
-        bool *Subtract(bool packet1[PacketWidth], bool packet2[PacketWidth], bool seamless = true) {
+        bool *Subtract(bool packet1[PacketWidth], bool packet2[PacketWidth], bool seamless = true) { // NOLINT(readability-non-const-parameter)
             ResetFlags();
 
             auto packet1Copy = packet1;
